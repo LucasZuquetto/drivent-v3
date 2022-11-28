@@ -26,11 +26,11 @@ export async function getHotelById(req: AuthenticatedRequest, res: Response) {
     if (ticket.TicketType.isRemote === true || ticket.TicketType.includesHotel === false || ticket.status !== "PAID") {
       return res.sendStatus(httpStatus.BAD_REQUEST);
     }
-    const rooms = await hotelsService.getRoomsByHotelId(Number(hotelId));
-    if(rooms.Rooms.length === 0) {
+    const hotel = await hotelsService.getRoomsByHotelId(Number(hotelId));
+    if(hotel.Rooms.length === 0) {
       return res.sendStatus(httpStatus.NOT_FOUND);
     }
-    return res.status(httpStatus.OK).send(rooms);
+    return res.status(httpStatus.OK).send(hotel);
   } catch (error) {
     return res.sendStatus(httpStatus.NOT_FOUND);
   }
