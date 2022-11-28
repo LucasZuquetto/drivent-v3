@@ -17,3 +17,21 @@ export async function getHotels(req: AuthenticatedRequest, res: Response) {
     return res.sendStatus(httpStatus.NOT_FOUND);
   }
 }
+
+export async function getHotelById(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+  const { hotelId } = req.params;
+  try {
+    const ticket = await ticketService.getTicketByUserId(userId);
+    if (ticket.TicketType.isRemote === true || ticket.TicketType.includesHotel === false || ticket.status !== "PAID") {
+      return res.sendStatus(httpStatus.BAD_REQUEST);
+    }
+    const rooms = await hotelsService.getRoomsByHotelId(Number(hotelId));
+    if(rooms.Rooms.length === 0) {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+    return res.status(httpStatus.OK).send(rooms);
+  } catch (error) {
+    return res.sendStatus(httpStatus.NOT_FOUND);
+  }
+}
